@@ -1,12 +1,13 @@
 mod config;
 mod generator;
+mod document;
 
 use anyhow::Error;
 use std::io;
 use mdbook_core::utils;
 use mdbook_renderer::RenderContext;
 
-use crate::{generator::Generator, config::Config};
+use crate::{generator::Generator, config::{Config, TomlConfig}};
 
 fn main() {
   let mut stdin = io::stdin();
@@ -19,7 +20,7 @@ fn main() {
     return
   }
 
-  let options = match ctx.config.get("output.pdf2") {
+  let options = match ctx.config.get::<TomlConfig>("output.pdf2") {
     Ok(t) => Config::read(t),
     Err(e) => {
       let err = Error::msg(format!("Could not parse config file: {}", e));

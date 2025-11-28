@@ -1,6 +1,11 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
+pub struct TomlConfig {
+  pub landscape: bool,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct Config {
   #[serde(default = "FontSize::default")]
   pub font_size: FontSize,
@@ -35,7 +40,7 @@ pub struct PageOptions {
 	#[serde(default = "default_landscape")]
 	pub landscape: bool,
 	#[serde(default = "default_margin")]
-	pub margin: (f64, f64),
+	pub margin: (f32, f32),
 }
 
 #[allow(non_camel_case_types)]
@@ -43,10 +48,6 @@ pub struct PageOptions {
 #[serde(untagged)]
 pub enum PageSize {
 	A4,
-	Custom {
-		x: f64,
-		y: f64,
-	},
 }
 
 fn default_title() -> u8 { 25 }
@@ -57,18 +58,19 @@ fn default_h4() -> u8 { 14 }
 fn default_h5() -> u8 { 12 }
 fn default_h6() -> u8 { 12 }
 fn default_text() -> u8 { 10 }
-fn default_margin() -> (f64, f64) { (20.0, 20.0) }
+fn default_margin() -> (f32, f32) { (20.0, 20.0) }
 fn default_landscape() -> bool { false }
 
 impl Config {
-  pub fn read(ctx: Option<Self>) -> Self { ctx.unwrap_or(Self::default()) }
+  pub fn read(_ctx: Option<TomlConfig>) -> Self {
+    Self::default()
+  }
 }
 
 impl PageSize {
-  pub fn size(&self, landscape: bool) -> (f64, f64) {
+  pub fn size(&self, landscape: bool) -> (f32, f32) {
     let (x, y) = match self {
       PageSize::A4 => (210.0, 297.0),
-      PageSize::Custom { x, y } => (*x, *y),
     };
 
     if landscape {
